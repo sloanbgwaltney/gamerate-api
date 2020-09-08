@@ -34,6 +34,11 @@ userSchema.methods.validPassword = async function (plainPassword) {
   return compare(plainPassword, this.password)
 }
 
+userSchema.methods.getGameProfilesCreatedByUser = async function () {
+  const gameProfileModel = this.model('gameprofile')
+  return gameProfileModel.getByCreationUser(this.id)
+}
+
 userSchema.statics.findOneByUsername = async function (username) {
   return this.findOne({ username })
 }
