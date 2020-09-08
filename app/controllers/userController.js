@@ -11,10 +11,21 @@ function createUser() {
       res.status(201).json(savedUser)
       next()
     } catch (e) {
-      console.log(e)
       next(createError(500))
     }
   };
 }
 
-module.exports = { createUser }
+function getGameProfilesCreatedByUser() {
+  return async function (req, res, next) {
+    try {
+      const gameProfiles = await req.user.getGameProfilesCreatedByUser()
+      res.status(200).json({ gameProfiles })
+    } catch (e) {
+      console.log(e)
+      next(createError(500))
+    }
+  }
+}
+
+module.exports = { createUser, getGameProfilesCreatedByUser }
