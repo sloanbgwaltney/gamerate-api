@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const { connect } = require("mongoose");
+const passport = require('passport')
 const { userRouter } = require('./router/userRouter')
 const { securityRouter } = require('./router/securityRouter')
 const { validateRequestor } = require('./lib/validateRequestor')
@@ -12,7 +13,7 @@ async function run() {
       { useUnifiedTopology: true, useNewUrlParser: true },
     );
     const app = express();
-
+    app.use(passport.initialize())
     app.use(express.json());
     app.use(validateRequestor());
 
