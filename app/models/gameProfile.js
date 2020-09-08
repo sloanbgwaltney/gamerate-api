@@ -25,6 +25,13 @@ const gameProfileSchema = new Schema({
     performanceCategories: [performanceCategory]
 })
 
+gameProfileSchema.methods.create = async function (userId) {
+    this.createdDate = new Date()
+    this.createdBy = userId
+    this.lastUpdatedBy = userId
+    this.lastUpdatedDate = new Date()
+    return this.save()
+}
 const GameProfile = model('gameprofile', gameProfileSchema)
 
 module.exports = { GameProfile }
