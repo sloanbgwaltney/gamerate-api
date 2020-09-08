@@ -32,6 +32,11 @@ gameProfileSchema.methods.create = async function (userId) {
     this.lastUpdatedDate = new Date()
     return this.save()
 }
+
+gameProfileSchema.statics.getByCreationUser = async function (userId) {
+    return this.model('gameprofile').find({ createdBy: userId })
+}
+
 const GameProfile = model('gameprofile', gameProfileSchema)
 
 module.exports = { GameProfile }
