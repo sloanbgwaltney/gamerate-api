@@ -42,8 +42,8 @@ gameProfileSchema.methods.create = async function (userId) {
 
 gameProfileSchema.methods.createUserAccess = async function (currentUserId, addedUserId, level) {
     if (!Array.isArray(this.users)) this.users = []
-    const addedUserIndex = this.users.find(user => user.id === addedUserId)
-    if (addedUserIndex) throw new UserAlreadyHasAccessLevel(addedUserIndex)
+    const addedUser = this.getUserAccess(addedUserId)
+    if (addedUser) throw new UserAlreadyHasAccessLevel(addedUser.id)
     const date = new Date()
     const userAccess = {
         accessLevel: level,
@@ -54,6 +54,12 @@ gameProfileSchema.methods.createUserAccess = async function (currentUserId, adde
         lastUpdatedBy: addedUserId
     }
     this.users.push(userAccess)
+}
+
+
+gameProfileSchema.methods.getUserAccess = function (userId) {
+    if (!this.users) return null
+    return this.users.find(user => user.id === userId)
 }
 
 gameProfileSchema.methods.createPerformanceCategory = async function (pc, userId) {
