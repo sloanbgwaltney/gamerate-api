@@ -20,7 +20,7 @@ userSchema.methods.hashPassword = async function () {
 }
 
 userSchema.methods.isUnqiueUser = async function () {
-  const results = await this.model("user").find({ $or: [{ username: this.username }, { email: this.email }] })
+  const results = await this.find({ $or: [{ username: this.username }, { email: this.email }] })
   return results.length === 0
 }
 
