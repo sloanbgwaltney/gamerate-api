@@ -28,4 +28,4 @@ function login() {
 //     }
 // }
 
-module.exports = { login, refresh }
+module.exports = { login }
