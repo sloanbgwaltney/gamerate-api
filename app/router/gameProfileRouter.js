@@ -10,7 +10,7 @@ gameProfileRouter.post('', passport.authenticate('jwt', { session: false }), cre
 gameProfileRouter.post(
     '/:gameProfileId/performanceCategory',
     passport.authenticate(PASSPORT_KEYS.JWT, { session: false }),
-    fetchEntity(GameProfile, 'gameProfileId', 'gameProfile'),
+    fetchEntity(GameProfile, req => req.params.gameProfileId, (req, res, entity) => req.entities.gameProfile = entity),
     passport.authenticate(PASSPORT_KEYS.GAME_PRFILE.LEVEL2, { session: false }),
     validateBody(createPerformanceCategorySchema),
     createPerformanceCategory()
