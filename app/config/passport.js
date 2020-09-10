@@ -8,12 +8,7 @@ const createError = require('http-errors')
 
 const PASSPORT_KEYS = {
     LOCAL: 'local',
-    JWT: 'jwt',
-    GAME_PRFILE: {
-        LEVEL1: 'level-1-gameprofile-access',
-        LEVEL2: 'level-2-gameprofile-access',
-        LEVEL3: 'level-3-gameprofile-access'
-    }
+    JWT: 'jwt'
 }
 
 var opts = {}
