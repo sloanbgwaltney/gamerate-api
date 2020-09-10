@@ -17,11 +17,12 @@ function createGameProfile() {
 function createPerformanceCategory() {
     return async function (req, res, next) {
         try {
-            req.gameProfile.createPerformanceCategory(req.body, req.user.id)
-            const gameProfile = await req.gameProfile.save()
+            req.entities.gameProfile.createPerformanceCategory(req.body, req.user.id)
+            const gameProfile = await req.entities.gameProfile.save()
             res.status(201).json(gameProfile)
             next()
         } catch (e) {
+            console.log(e)
             next(createError(500))
         }
     }
