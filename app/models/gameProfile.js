@@ -81,6 +81,7 @@ gameProfileSchema.methods.createPerformanceCategory = async function (pc, userId
 gameProfileSchema.methods.hasAtLeastLevelAccess = function (level, userId) {
     if (!this.usersAccess) return false
     const userAccess = this.usersAccess.get(userId)
+    if (!userAccess) return false
     return userAccess.accessLevel >= level
 }
 
