@@ -5,7 +5,7 @@ function fetchEntity(model, method, argumentsRetriever, propertySetter) {
     return async function (req, res, next) {
         try {
             const arguments = await argumentsRetriever(req, res)
-            const entity = model[method](arguments)
+            const entity = await model[method](arguments)
             await propertySetter(req, res, entity)
             next()
         } catch (e) {
