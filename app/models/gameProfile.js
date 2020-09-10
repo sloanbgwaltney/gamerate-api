@@ -2,6 +2,7 @@ const { Schema, model } = require("mongoose");
 const { performanceCategory } = require('./performanceCategory')
 const { userAccessSchema } = require('./userAccess');
 const { UserAlreadyHasAccessLevel } = require("../errors/userAlreadyHasAccessLevel");
+const { MONGOOSE_KEYS } = require('./mongooseKeys')
 
 const gameProfileSchema = new Schema({
     name: {
@@ -12,14 +13,14 @@ const gameProfileSchema = new Schema({
     },
     createdBy: {
         type: Schema.Types.ObjectId,
-        ref: 'user'
+        ref: MONGOOSE_KEYS.MODELS.USER
     },
     createdDate: {
         type: Date
     },
     lastUpdatedBy: {
         type: Schema.Types.ObjectId,
-        ref: 'user'
+        ref: MONGOOSE_KEYS.MODELS.USER
     },
     lastUpdatedDate: {
         type: Date
@@ -35,7 +36,7 @@ const gameProfileSchema = new Schema({
 })
 
 gameProfileSchema.statics.getByCreationUser = async function (userId) {
-    return this.model('gameprofile').find({ createdBy: userId })
+    return this.model(MONGOOSE_KEYS.MODELS.GAME_PROFILE).find({ createdBy: userId })
 }
 
 gameProfileSchema.methods.create = async function (userId) {
@@ -85,6 +86,6 @@ gameProfileSchema.methods.hasAtLeastLevelAccess = function (level, userId) {
     return userAccess.accessLevel >= level
 }
 
-const GameProfile = model('gameprofile', gameProfileSchema)
+const GameProfile = model(MONGOOSE_KEYS.MODELS.GAME_PROFILE, gameProfileSchema)
 
 module.exports = { GameProfile }

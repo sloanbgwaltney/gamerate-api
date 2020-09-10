@@ -1,5 +1,6 @@
 const { Schema, model } = require("mongoose");
 const { hash, compare } = require('bcryptjs');
+const { MONGOOSE_KEYS } = require('./mongooseKeys')
 
 const userSchema = new Schema({
   username: {
@@ -35,7 +36,7 @@ userSchema.methods.validPassword = async function (plainPassword) {
 }
 
 userSchema.methods.getGameProfilesCreatedByUser = async function () {
-  const gameProfileModel = this.model('gameprofile')
+  const gameProfileModel = this.model(MONGOOSE_KEYS.MODELS.GAME_PROFILE)
   return gameProfileModel.getByCreationUser(this.id)
 }
 
