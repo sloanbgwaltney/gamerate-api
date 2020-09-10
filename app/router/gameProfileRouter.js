@@ -14,7 +14,7 @@ gameProfileRouter.post(
     fetchEntity(GameProfile, req => req.params.gameProfileId, (req, res, entity) => req.entities.gameProfile = entity),
     isAuthorized((req, res) => {
         if (!req.entities.gameProfile) return false; return req.entities.gameProfile.hasAtLeastLevelAccess(2, req.user.id)
-    }, 'Must have level 2 acces to this game profile to create a performance category'),
+    }, 'Must have level 2 access to this game profile to create a performance category'),
     validateBody(createPerformanceCategorySchema),
     createPerformanceCategory()
 )
