@@ -78,6 +78,12 @@ gameProfileSchema.methods.createPerformanceCategory = async function (pc, userId
     this.performanceCategories.set(pc.name, pc)
 }
 
+gameProfileSchema.methods.hasAtLeastLevelAccess = function (level, userId) {
+    if (!this.usersAccess) return false
+    const userAccess = this.usersAccess.get(userId)
+    return userAccess.accessLevel >= level
+}
+
 const GameProfile = model('gameprofile', gameProfileSchema)
 
 module.exports = { GameProfile }
