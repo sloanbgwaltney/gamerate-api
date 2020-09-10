@@ -2,6 +2,7 @@ const { Schema, model } = require("mongoose");
 const { performanceCategory } = require('./performanceCategory')
 const { userAccessSchema } = require('./userAccess');
 const { UserAlreadyHasAccessLevel } = require("../errors/userAlreadyHasAccessLevel");
+
 const gameProfileSchema = new Schema({
     name: {
         type: String
@@ -23,8 +24,14 @@ const gameProfileSchema = new Schema({
     lastUpdatedDate: {
         type: Date
     },
-    performanceCategories: [performanceCategory],
-    usersAccess: [userAccessSchema]
+    performanceCategories: {
+        type: Map,
+        of: performanceCategory
+    },
+    usersAccess: {
+        type: Map,
+        of: userAccessSchema
+    }
 })
 
 gameProfileSchema.statics.getByCreationUser = async function (userId) {
@@ -41,7 +48,7 @@ gameProfileSchema.methods.create = async function (userId) {
 }
 
 gameProfileSchema.methods.createUserAccess = async function (currentUserId, addedUserId, level) {
-    if (!Array.isArray(this.usersAccess)) this.users = []
+    if (!this.usersAccess) this.usersAccess = new Map()
     const addedUser = this.getUserAccess(addedUserId)
     if (addedUser) throw new UserAlreadyHasAccessLevel(addedUser.id)
     const date = new Date()
@@ -53,13 +60,13 @@ gameProfileSchema.methods.createUserAccess = async function (currentUserId, adde
         lastUpdatedDate: date,
         lastUpdatedBy: addedUserId
     }
-    this.usersAccess.push(userAccess)
+    this.usersAccess.set(addedUserId, userAccess)
 }
 
 
 gameProfileSchema.methods.getUserAccess = function (userId) {
     if (!this.usersAccess) return null
-    return this.usersAccess.find(access => access.user == userId)
+    return this.usersAccess.get(userId)
 }
 
 gameProfileSchema.methods.createPerformanceCategory = async function (pc, userId) {
@@ -67,8 +74,8 @@ gameProfileSchema.methods.createPerformanceCategory = async function (pc, userId
     pc.createdBy = userId
     pc.lastUpdatedBy = userId
     pc.lastUpdatedDate = pc.createdDate
-    if (!Array.isArray(this.performanceCategories)) { this.performanceCategories = [] }
-    this.performanceCategories.push(pc)
+    if (!this.performanceCategories) this.performanceCategories = new Map()
+    this.performanceCategories.set(pc.name, pc)
 }
 
 const GameProfile = model('gameprofile', gameProfileSchema)
