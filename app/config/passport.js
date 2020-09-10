@@ -43,21 +43,20 @@ passport.use(new JwtStrategy(opts, async function (payload, done) {
     }
 }))
 
-passport.use('level-3-gameprofile-access', new CustomStrategy(passportGameProfileAccessSetup(3)))
-passport.use('level-2-gameprofile-access', new CustomStrategy(passportGameProfileAccessSetup(2)))
-passport.use('level-1-gameprofile-access', new CustomStrategy(passportGameProfileAccessSetup(1)))
+// Passport is mostly abput authentication the processes below where more authorization and easier/more flexable methods have been implemented
+// passport.use('level-3-gameprofile-access', new CustomStrategy(passportGameProfileAccessSetup(3)))
+// passport.use('level-2-gameprofile-access', new CustomStrategy(passportGameProfileAccessSetup(2)))
+// passport.use('level-1-gameprofile-access', new CustomStrategy(passportGameProfileAccessSetup(1)))
 
-// Would be awesome if I could somehow compose this so I can make the gameProfile key dynamic. 
-// That way I do not have to assume it is on request.entities.gameProfile and could come from anywhere
-function passportGameProfileAccessSetup(level) {
-    return function (request, done) {
-        if (!request.user) throw new TypeError('User is required at this point')
-        if (!req.entities.gameProfile) throw new TypeError('GameProfile refernce is not in the request')
-        const userAccess = req.entities.gameProfile.getUserAccess(request.user.id)
-        console.log(userAccess)
-        if (!userAccess || userAccess.accessLevel < level) return done(createError(403, 'You do not have the permission required for this request'), null)
-        return done(null, request.user)
-    }
-}
+// function passportGameProfileAccessSetup(level) {
+//     return function (request, done) {
+//         if (!request.user) throw new TypeError('User is required at this point')
+//         if (!req.entities.gameProfile) throw new TypeError('GameProfile refernce is not in the request')
+//         const userAccess = req.entities.gameProfile.getUserAccess(request.user.id)
+//         console.log(userAccess)
+//         if (!userAccess || userAccess.accessLevel < level) return done(createError(403, 'You do not have the permission required for this request'), null)
+//         return done(null, request.user)
+//     }
+// }
 
 module.exports = { passport, PASSPORT_KEYS }
