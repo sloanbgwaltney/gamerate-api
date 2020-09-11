@@ -7,27 +7,10 @@ const { InvalidScoringTotal } = require('../errors/invalidScoringTotal')
 const { scoringPolicySchema } = require('./scoringPolicy');
 const { NameTaken } = require("../errors/nameTaken");
 const { userAccessLevelPlugin } = require('../lib/mongoosePlugins/userAccessLevelPlugin')
-
+const { createUpdateMetadataPlugin } = require('../lib/mongoosePlugins/createUpdateMetadataPlugin')
 const gameProfileSchema = new Schema({
     name: {
         type: String
-    },
-    createDate: {
-        type: Date
-    },
-    createdBy: {
-        type: Schema.Types.ObjectId,
-        ref: MONGOOSE_KEYS.MODELS.USER
-    },
-    createdDate: {
-        type: Date
-    },
-    lastUpdatedBy: {
-        type: Schema.Types.ObjectId,
-        ref: MONGOOSE_KEYS.MODELS.USER
-    },
-    lastUpdatedDate: {
-        type: Date
     },
     performanceCategories: {
         type: Map,
@@ -44,12 +27,10 @@ gameProfileSchema.statics.getByCreationUser = async function (userId) {
 }
 
 gameProfileSchema.methods.create = async function (userId) {
-    this.createdDate = new Date()
-    this.createdBy = userId
-    this.lastUpdatedBy = userId
-    this.lastUpdatedDate = this.createdDate
-    console.log(this.createUserAccess)
+    this.setCreateEditMetadata(this, userId, true)
     this.createUserAccess(userId, 3)
+    const ua = this.setCreateEditMetadata(this.usersAccess.get(userId), userId, true)
+    this.usersAccess.set(userId, ua)
     return this.save()
 }
 
@@ -81,6 +62,9 @@ gameProfileSchema.methods.validateScoringPolicy = function (scoringPolicy) {
 }
 
 gameProfileSchema.plugin(userAccessLevelPlugin)
+gameProfileSchema.plugin(createUpdateMetadataPlugin)
+
+console.log(gameProfileSchema.path('usersAccess'))
 const GameProfile = model(MONGOOSE_KEYS.MODELS.GAME_PROFILE, gameProfileSchema)
 
 module.exports = { GameProfile }
