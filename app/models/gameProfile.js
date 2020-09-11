@@ -3,6 +3,11 @@ const { performanceCategory } = require('./performanceCategory')
 const { userAccessSchema } = require('./userAccess');
 const { UserAlreadyHasAccessLevel } = require("../errors/userAlreadyHasAccessLevel");
 const { MONGOOSE_KEYS } = require('./mongooseKeys')
+const { convertPlainObjectToMap } = require('../lib/convertPlainObjToMap')
+const { InvalidPerformanceCategoryName } = require('../errors/invalidPerformanceCategoryName')
+const { InvalidScoringTotal } = require('../errors/invalidScoringTotal')
+const { scoringPolicySchema } = require('./scoringPolicy');
+const { NameTaken } = require("../errors/nameTaken");
 
 const gameProfileSchema = new Schema({
     name: {
@@ -32,6 +37,10 @@ const gameProfileSchema = new Schema({
     usersAccess: {
         type: Map,
         of: userAccessSchema
+    },
+    scoringPolicies: {
+        type: Map,
+        of: scoringPolicySchema
     }
 })
 
@@ -84,6 +93,24 @@ gameProfileSchema.methods.hasAtLeastLevelAccess = function (level, userId) {
     const userAccess = this.usersAccess.get(userId)
     if (!userAccess) return false
     return userAccess.accessLevel >= level
+}
+
+gameProfileSchema.methods.createScoringPolicy = function (scoringPolicy) {
+    scoringPolicy.weights = convertPlainObjectToMap(scoringPolicy.weights)
+    this.validateScoringPolicy(scoringPolicy)
+    this.scoringPolicies.set(scoringPolicy.name, scoringPolicy)
+}
+
+gameProfileSchema.methods.validateScoringPolicy = function (scoringPolicy) {
+    if (!this.scoringPolicies) this.scoringPolicies = new Map()
+    if (this.scoringPolicies.get(scoringPolicy.name)) throw new NameTaken(scoringPolicy.name, 'Scoring Policy')
+    let total = 0
+    scoringPolicy.weights.forEach((value, key, policy) => {
+        if (!this.performanceCategories.get(key)) throw new InvalidPerformanceCategoryName(key)
+        total += value
+        if (total > 100) throw new InvalidScoringTotal(total)
+    }, this)
+    if (total !== 100) throw new InvalidScoringTotal(total)
 }
 
 const GameProfile = model(MONGOOSE_KEYS.MODELS.GAME_PROFILE, gameProfileSchema)
