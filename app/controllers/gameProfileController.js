@@ -27,4 +27,19 @@ function createPerformanceCategory() {
         }
     }
 }
-module.exports = { createGameProfile, createPerformanceCategory }
+
+function createScoringPolicy() {
+    return async function (req, res, next) {
+        try {
+            const policy = req.body
+            req.entities.gameProfile.createScoringPolicy(req.body)
+            const newProfile = await req.entities.gameProfile.save()
+            res.status(201).json(newProfile)
+            next()
+        } catch (e) {
+            console.log(e)
+        }
+    }
+}
+
+module.exports = { createGameProfile, createPerformanceCategory, createScoringPolicy }
