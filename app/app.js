@@ -7,12 +7,15 @@ const { userRouter } = require('./router/userRouter')
 const { securityRouter } = require('./router/securityRouter')
 const { gameProfileRouter } = require('./router/gameProfileRouter')
 const { initializeRequest } = require('./lib/middleware')
+const { resetDBData } = require('./dev/resetDBData')
+
 async function run() {
   try {
     await connect(
       process.env.MONGO_URI,
       { useUnifiedTopology: true, useNewUrlParser: true },
     );
+    await resetDBData()
     const app = express();
     app.use(helmet())
     app.use(passport.initialize())
