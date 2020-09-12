@@ -1,11 +1,9 @@
 const gameProfileRouter = require('express').Router()
 const { createGameProfile, createPerformanceCategory, createScoringPolicy } = require('../controllers/gameProfileController')
 const { passport, PASSPORT_KEYS } = require('../config/passport')
-const { fetchEntity } = require('../lib/fetchEntity')
+const { fetchEntity, validateBody, isAuthorized } = require('../lib/middleware')
 const { GameProfile } = require('../models/gameProfile')
-const { validateBody } = require('../lib/validateBody')
 const { createPerformanceCategorySchema } = require('../validators/performanceCategoryValidators')
-const { isAuthorized } = require('../lib/isAuthorized')
 
 gameProfileRouter.post('', passport.authenticate('jwt', { session: false }), createGameProfile())
 gameProfileRouter.post(

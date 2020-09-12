@@ -6,7 +6,7 @@ const helmet = require('helmet')
 const { userRouter } = require('./router/userRouter')
 const { securityRouter } = require('./router/securityRouter')
 const { gameProfileRouter } = require('./router/gameProfileRouter')
-const { initializeRequest } = require('./lib/initializeRequest')
+const { initializeRequest } = require('./lib/middleware')
 async function run() {
   try {
     await connect(

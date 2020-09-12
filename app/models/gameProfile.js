@@ -1,13 +1,12 @@
 const { Schema, model } = require("mongoose");
 const { performanceCategory } = require('./performanceCategory')
 const { MONGOOSE_KEYS } = require('./mongooseKeys')
-const { convertPlainObjectToMap } = require('../lib/convertPlainObjToMap')
-const { InvalidPerformanceCategoryName } = require('../errors/invalidPerformanceCategoryName')
-const { InvalidScoringTotal } = require('../errors/invalidScoringTotal')
+const { InvalidPerformanceCategoryNameError, InvalidScoringTotalError, NameTakenError } = require('../errors/errors')
+const { convertPlainObjectToMap } = require('../lib/util')
 const { scoringPolicySchema } = require('./scoringPolicy');
-const { NameTaken } = require("../errors/nameTaken");
 const { userAccessLevelPlugin } = require('../lib/mongoosePlugins/userAccessLevelPlugin')
 const { createUpdateMetadataPlugin } = require('../lib/mongoosePlugins/createUpdateMetadataPlugin')
+
 const gameProfileSchema = new Schema({
     name: {
         type: String
@@ -51,20 +50,19 @@ gameProfileSchema.methods.createScoringPolicy = function (scoringPolicy) {
 
 gameProfileSchema.methods.validateScoringPolicy = function (scoringPolicy) {
     if (!this.scoringPolicies) this.scoringPolicies = new Map()
-    if (this.scoringPolicies.get(scoringPolicy.name)) throw new NameTaken(scoringPolicy.name, 'Scoring Policy')
+    if (this.scoringPolicies.get(scoringPolicy.name)) throw new NameTakenError(scoringPolicy.name, 'Scoring Policy')
     let total = 0
     scoringPolicy.weights.forEach((value, key, policy) => {
-        if (!this.performanceCategories.get(key)) throw new InvalidPerformanceCategoryName(key)
+        if (!this.performanceCategories.get(key)) throw new InvalidPerformanceCategoryNameError(key)
         total += value
-        if (total > 100) throw new InvalidScoringTotal(total)
+        if (total > 100) throw new InvalidScoringTotalError(total)
     }, this)
-    if (total !== 100) throw new InvalidScoringTotal(total)
+    if (total !== 100) throw new InvalidScoringTotalError(total)
 }
 
 gameProfileSchema.plugin(userAccessLevelPlugin)
 gameProfileSchema.plugin(createUpdateMetadataPlugin)
 
-console.log(gameProfileSchema.path('usersAccess'))
 const GameProfile = model(MONGOOSE_KEYS.MODELS.GAME_PROFILE, gameProfileSchema)
 
 module.exports = { GameProfile }

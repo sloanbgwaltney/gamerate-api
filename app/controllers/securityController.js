@@ -1,5 +1,5 @@
 const createError = require('http-errors')
-const { createJWT } = require('../lib/token')
+const { createJWT } = require('../lib/util')
 
 function login() {
     return async function (req, res, next) {

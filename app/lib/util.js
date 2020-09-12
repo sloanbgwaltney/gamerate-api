@@ -16,4 +16,12 @@ async function createJWT(userId) {
     return _createJWT(userId, PRIVATE_JWT_KEY, { expiresIn: JWT_EXPIRES_IN })
 }
 
-module.exports = { createJWT }
+function convertPlainObjectToMap(obj) {
+    const map = new Map()
+    for (const [key, value] of Object.entries(obj)) {
+        map.set(key, value)
+    }
+    return map
+}
+
+module.exports = { createJWT, convertPlainObjectToMap }
