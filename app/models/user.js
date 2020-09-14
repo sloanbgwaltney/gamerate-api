@@ -40,6 +40,10 @@ userSchema.methods.getGameProfilesCreatedByUser = async function () {
   return gameProfileModel.getByCreationUser(this.id)
 }
 
+userSchema.methods.getUsersGameProfiles = async function (userId, opts) {
+  return this.model(MONGOOSE_KEYS.MODELS.GAME_PROFILE).getUsersGameProfiles(userId, opts)
+}
+
 userSchema.statics.findOneByUsername = async function (username) {
   return this.findOne({ username })
 }
