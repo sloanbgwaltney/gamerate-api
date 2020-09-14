@@ -44,6 +44,10 @@ const gameResultSchema = new Schema({
     }
 })
 
+gameResultSchema.methods.validateGameProfile = async function () {
+
+}
+
 const GameResult = model(MONGOOSE_KEYS.MODELS.GAME_RESULT, gameResultSchema)
 
 module.exports = { GameResult }
