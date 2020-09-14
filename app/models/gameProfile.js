@@ -6,6 +6,7 @@ const { convertPlainObjectToMap } = require('../lib/util')
 const { scoringPolicySchema } = require('./scoringPolicy');
 const { userAccessLevelPlugin } = require('../lib/mongoosePlugins/userAccessLevelPlugin')
 const { createUpdateMetadataPlugin } = require('../lib/mongoosePlugins/createUpdateMetadataPlugin')
+const { Types } = require('mongoose')
 
 const gameProfileSchema = new Schema({
     name: {
@@ -34,12 +35,13 @@ gameProfileSchema.methods.create = async function (userId) {
 }
 
 gameProfileSchema.methods.createPerformanceCategory = async function (pc, userId) {
-    pc.createdDate = new Date()
+    pc.createdAt = new Date()
     pc.createdBy = userId
     pc.lastUpdatedBy = userId
-    pc.lastUpdatedDate = pc.createdDate
+    pc.lastUpdatedAt = pc.createdAt
     if (!this.performanceCategories) this.performanceCategories = new Map()
-    this.performanceCategories.set(pc.name, pc)
+    pc._id = Types.ObjectId()
+    this.performanceCategories.set(pc._id.toString(), pc)
 }
 
 gameProfileSchema.methods.createScoringPolicy = function (scoringPolicy) {
