@@ -16,10 +16,10 @@ function createUser() {
   };
 }
 
-function getGameProfilesCreatedByUser() {
+function getGameProfilesByUser() {
   return async function (req, res, next) {
     try {
-      const gameProfiles = await req.user.getGameProfilesCreatedByUser()
+      const gameProfiles = await req.user.getUsersGameProfiles(req.user.id)
       res.status(200).json({ gameProfiles })
     } catch (e) {
       console.log(e)
@@ -28,4 +28,4 @@ function getGameProfilesCreatedByUser() {
   }
 }
 
-module.exports = { createUser, getGameProfilesCreatedByUser }
+module.exports = { createUser, getGameProfilesByUser }

@@ -62,6 +62,35 @@ gameProfileSchema.methods.validateScoringPolicy = function (scoringPolicy) {
     if (total !== 100) throw new InvalidScoringTotalError(total)
 }
 
+
+gameProfileSchema.statics.getUsersGameProfiles = async function (userId, opts = {}) {
+    const defaultOpts = {
+        sortBy: 'name',
+        sortType: 'descending',
+        resultsPerPage: 20,
+        page: 1
+    }
+    const finalOptions = Object.assign(defaultOpts, opts)
+    const sortOperation = finalOptions.sortType == 'descending' ? '-' : '+'
+    const results = await this.find({ [`usersAccess.${userId}`]: { $exists: true } })
+        .limit(finalOptions.resultsPerPage)
+        .sort(`${sortOperation}${finalOptions.sortBy}`)
+        .skip(finalOptions.resultsPerPage * (finalOptions.page - 1))
+    results.forEach(res => res.sanitize(userId))
+    return results
+}
+
+gameProfileSchema.methods.sanitize = async function (userId) {
+    sanitizeUsersAccess(this, userId)
+}
+
+function sanitizeUsersAccess(gp, userId) {
+    const userAccess = gp.usersAccess.get(userId)
+    if (userAccess.accessLevel === 3) return
+    gp.usersAccess = new Map()
+    gp.usersAccess.set(userId, this.usersAccess)
+}
+
 gameProfileSchema.plugin(userAccessLevelPlugin)
 gameProfileSchema.plugin(createUpdateMetadataPlugin)
 
