@@ -14,7 +14,7 @@ async function resetDBData() {
         for (let i = 0; i < 50; i++) { users.push(generateRandomUser()) }
         users = await Promise.all(users)
         let gameProfiles = []
-        for (let i = 0; i < 50; i++) { gameProfiles.push(generateGameProfile(users[randomRangedArrayNumber(50)].id)) }
+        for (let i = 0; i < 50; i++) { gameProfiles.push(generateGameProfile(users[i].id)) }
         gameProfiles = await Promise.all(gameProfiles)
         let gameProfilesWithPCs = []
         for (let gameProfileIndex = 0; gameProfileIndex < gameProfiles.length; gameProfileIndex++) {
